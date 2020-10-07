@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+ name: fibonacci-service
+spec:
+ type: NodePort
+ selector:
+  app: fibonacci
+ ports:
+ - protocol: TCP
+   port: 8080
+   nodePort: 30001
+   name: userserver
+ - protocol: TCP
+   port: 9090
+   nodePort: 30002
+   name: fibonacciserver
+ - protocol: UDP
+   port: 53533
+   nodePort: 30003
+   name: authoritativeserver
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: fibonacci
+spec:
+ selector:
+   matchLabels:
+    app: fibonacci
+ template:
+  metadata:
+   labels:
+    app: fibonacci
+  spec:
+   containers:
+   - name: userserver
+     image: kimmishra/userserver:latest
+     imagePullPolicy: Always
+     ports:
+     - containerPort: 8080
+   - name: fibonacciserver
+     image: kimmishra/fibonacciserver:latest
+     imagePullPolicy: Always
+     ports:
+     - containerPort: 9090
+   - name: authoritativeserver
+     image: kimmishra/authoritativeserver:latest
+     imagePullPolicy: Always
+     ports:
+     - containerPort: 53533
